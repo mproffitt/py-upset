@@ -4,3 +4,5 @@ setup.py
 src/data/test_data_dict.pckl
 src/pyupset/__init__.py
 src/pyupset/visualisation.py
+src/pyupset/resources.py
+src/pyupset/methods.py
