@@ -49,6 +49,12 @@ class UpSetPlot():
     GRIDSPEC_COLS = 1
     GRIDSPEC_SPACE = .4
     SETSIZE_WIDTH = 3
+    DEFAULT_ALPHA = .3
+    GRID_VERTICAL_OFFSET = 5
+    GRID_HORIZONTAL_OFFSET = 5
+    MATRIX_OFFSET = 4
+    GAP_DIVISOR = 500.0
+    GAP_MULTIPLIER = 20
 
     def __init__(self, data_extractor, additional_plots=False, highlight=None):
         """
@@ -88,12 +94,12 @@ class UpSetPlot():
 
         self._standard_graph_settings = {
             'scatter': {
-                'alpha': .3,
+                'alpha': self.DEFAULT_ALPHA,
                 'edgecolor': None
             },
             'hist': {
                 'histtype': 'stepfilled',
-                'alpha': .3,
+                'alpha': self.DEFAULT_ALPHA,
                 'lw': 0
             }
         }
@@ -150,9 +156,9 @@ class UpSetPlot():
         )
 
         self._grid_spec.main_gs = gridspec.GridSpec(
-            UpSetPlot.GRIDSPEC_ROWS, # was a magic number
-            UpSetPlot.GRIDSPEC_COLS, # was a magic number
-            hspace=UpSetPlot.GRIDSPEC_SPACE # was a magic number
+            UpSetPlot.GRIDSPEC_ROWS,
+            UpSetPlot.GRIDSPEC_COLS,
+            hspace=UpSetPlot.GRIDSPEC_SPACE
         )
 
         self._grid_spec.top_gs = (
@@ -164,14 +170,14 @@ class UpSetPlot():
             self._grid_spec.bottom_gs = self._grid_spec.main_gs[2, 0]
 
         gs_top = gridspec.GridSpecFromSubplotSpec(
-            (self._data.rows * 5), # Not sure where the 5 comes from
-            (self._data.columns + 5),
+            (self._data.rows * self.GRID_VERTICAL_OFFSET),
+            (self._data.columns + self.GRID_HORIZONTAL_OFFSET),
             subplot_spec=self._grid_spec.top_gs,
             wspace=.1,
             hspace=.2
         )
 
-        tablesize_w = self.SETSIZE_WIDTH + 2 # magic number
+        tablesize_w = self.SETSIZE_WIDTH + 2
         intmatrix_w = tablesize_w + self._data.columns
         intbars_w = tablesize_w + self._data.columns
 
@@ -195,7 +201,7 @@ class UpSetPlot():
 
         self._graph_store.intersection_bars = plt.subplot(
             gs_top[
-                :(self._data.rows * 4) - 1,
+                :(self._data.rows * self.MATRIX_OFFSET) - 1,
                 tablesize_w:intbars_w
             ] # because, magic numbers
         )
@@ -296,7 +302,7 @@ class UpSetPlot():
         plot.set_ylim(((height / 2), plot.get_ylim()[1] + (height / 2)))
         xlim = plot.get_xlim()
 
-        gap = (max(xlim) / 500.0) * 20
+        gap = (max(xlim) / self.GAP_DIVISOR) * self.GAP_MULTIPLIER
         plot.set_xlim(xlim[0] + gap, xlim[1] - gap)
         xlim = plot.get_xlim()
 
@@ -384,7 +390,7 @@ class UpSetPlot():
 
         plot.ticklabel_format(style='sci', axes='y', scilimits=(0, 4))
 
-        gap = max(ylim) / 500.0 * 20
+        gap = max(ylim) / self.GAP_DIVISOR * self.GAP_MULTIPLIER
         plot.set_ylim(ylim[0] - gap, ylim[1] + gap)
         ylim = plot.get_ylim()
         plot.spines['left'].set_bounds(ylim[0], ylim[1])
@@ -520,8 +526,8 @@ class UpSetPlot():
         plot.ticklabel_format(style='sci', axes='y', scilimits=(0, 4))
 
         self._strip_axes(plot, keep_spines=['bottom', 'left'], keep_ticklabels=['bottom', 'left'])
-        gap_y = max(ylim) / 500.0 * 20
-        gap_x = max(xlim) / 500.0 * 20
+        gap_y = max(ylim) / self.GAP_DIVISOR * self.GAP_MULTIPLIER
+        gap_x = max(xlim) / self.GAP_DIVISOR * self.GAP_MULTIPLIER
 
         plot.set_ylim(ylim[0] - gap_y, ylim[1] + gap_y)
         plot.set_xlim(xlim[0] - gap_x, xlim[1] + gap_x)

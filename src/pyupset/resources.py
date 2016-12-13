@@ -243,11 +243,25 @@ class ExtractedData(Immutable):
         self._options = {
             '_in_sets': in_sets,
             '_out_sets': out_sets,
-            '_size': len(results.index),
-            '_degree': len(in_sets),
             '_results': results,
             '_filter_config': filter_config
         }
+
+    @property
+    def size(self):
+        """
+        Gets the size of the current data object
+
+        :returns int:
+        """
+        return len(self.results.index)
+
+    @property
+    def degree(self):
+        """
+        Gets the degree of this intersection
+        """
+        return len(self.in_sets)
 
     def additional_plot_data(self, x, y=None):
         """
