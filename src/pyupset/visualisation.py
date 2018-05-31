@@ -119,7 +119,7 @@ class UpSetPlot():
 
         :param string filename
         """
-        self._graph_store.figure.savefig(filename=filename)
+        self._graph_store.figure.savefig(filename)
 
     @staticmethod
     def _create_coordinates(rows, cols):
