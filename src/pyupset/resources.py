@@ -479,6 +479,7 @@ class DataExtractor(object):
             keys = sorted(list(self._frames.keys()))
             for index, key in enumerate(keys):
                 frame = self._frames[key]
+                original_columns = frame.columns
                 frame.columns = [
                     '{0}_{1}'.format(column, key)
                     if column not in self._unique_keys
@@ -487,7 +488,7 @@ class DataExtractor(object):
                     for column in self._frames[key].columns
                 ]
                 if index == 0:
-                    self._merge = frame
+                    self._merge = frame.copy(deep=True)
                 else:
                     suffixes = (
                         '_{0}'.format(keys[index-1]),
@@ -497,9 +498,10 @@ class DataExtractor(object):
                         frame,
                         on=self._unique_keys,
                         how='outer',
-                        copy=False,
+                        copy=True,
                         suffixes=suffixes
                     )
+                frame.columns = original_columns
             return self._merge
         except MemoryError:
             # We want to clean up as best we can here to

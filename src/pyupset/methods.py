@@ -48,6 +48,17 @@ def plot(data_dict, *, unique_keys=None, sort_by='size', inters_size_bounds=(0, 
     additional_plots = [] if additional_plots is None else additional_plots
     unique_keys = list(unique_keys if unique_keys is not None else __get_all_common_columns(data_dict))
 
+    reset = False
+    for key in data_dict:
+        if list(data_dict[key].columns) == unique_keys:
+            reset = True
+
+    if reset:
+        for key in data_dict:
+            data_dict[key].index.name = '__index' # set the name to something unlikely to clash with existing columns
+        data_dict = {key: data_dict[key].reset_index() for key in data_dict}
+        unique_keys = ['__index']
+
     filter_config = FilterConfig()
     filter_config.sort_by = sort_by
     filter_config.size_bounds = inters_size_bounds
@@ -81,7 +92,6 @@ def __get_all_common_columns(data_dict):
     """
     if isinstance(data_dict, DataExtractor):
         return data_dict.unique_keys
-
     common_columns = []
     for i, k in enumerate(data_dict.keys()):
         if i == 0:
@@ -92,4 +102,4 @@ def __get_all_common_columns(data_dict):
         raise ValueError(
             'Data frames should have homogeneous columns with the same name to use for computing intersections'
         )
-    return common_columns.unique()
+    return common_columns.unique().values
